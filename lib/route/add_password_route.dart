@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:password_manager/common/utils.dart';
+import 'package:password_manager/models/index.dart';
+import 'package:password_manager/service/pwd_manager_service.dart';
 
+/// 添加密码页面
 class AddPasswordRoute extends StatefulWidget {
   @override
   _AddPasswordRouteState createState() {
@@ -9,7 +12,7 @@ class AddPasswordRoute extends StatefulWidget {
 }
 
 class _AddPasswordRouteState extends State<AddPasswordRoute> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   TextEditingController _titleController = new TextEditingController();
   TextEditingController _accountController = new TextEditingController();
@@ -71,7 +74,7 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: RaisedButton(
-                onPressed: _save(),
+                onPressed: _save,
                 child: Text("保存"),
               ),
             ),
@@ -82,12 +85,22 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
   }
 
   /// 保存
-  _save() {
+  _save() async {
     // 保存之前先进行校验各个表单字段是否合法
     if (_formKey.currentState.validate()) {
       // 该方法表示当所有表单都通过时会返回true
       Utils.showLoading(context, "正在加密保存");
-
+      PwdManager pwdManager = new PwdManager();
+      pwdManager.title = "工商银行";
+      pwdManager.account = "ICBC";
+      pwdManager.password = "123456";
+      print("pwdManager.id:${pwdManager.id}");
+      int i = await PwdManagerService.insert(pwdManager);
+      print(i);
+      List<Map<String, dynamic>> list = await PwdManagerService.select();
+      print(list);
+      // 关闭加载弹窗
+      Navigator.of(context).pop();
     }
   }
 }

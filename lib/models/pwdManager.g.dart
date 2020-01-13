@@ -8,10 +8,11 @@ part of 'pwdManager.dart';
 
 PwdManager _$PwdManagerFromJson(Map<String, dynamic> json) {
   return PwdManager()
-    ..id = json['id'] as int
+    ..id = json['id'] as num
     ..title = json['title'] as String
     ..account = json['account'] as String
-    ..password = json['password'] as String;
+    ..password = json['password'] as String
+    ..salt = json['salt'] as String;
 }
 
 Map<String, dynamic> _$PwdManagerToJson(PwdManager instance) =>
@@ -19,5 +20,6 @@ Map<String, dynamic> _$PwdManagerToJson(PwdManager instance) =>
       'id': instance.id,
       'title': instance.title,
       'account': instance.account,
-      'password': instance.password
+      'password': instance.password,
+      'salt': instance.salt
     };

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:password_manager/route/add_password_route.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,6 +13,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: '密码管理器'),
+      routes: <String, WidgetBuilder>{
+        "AddPasswordRoute": (context) => AddPasswordRoute(),
+      },
     );
   }
 }
@@ -35,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                print("add");
+                Navigator.of(context).pushNamed("AddPasswordRoute");
               })
         ],
       ),

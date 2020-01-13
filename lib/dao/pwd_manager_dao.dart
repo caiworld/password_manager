@@ -23,17 +23,19 @@ class PwdManagerDao extends BaseDBProvider {
   }
 
   /// 插入数据
-  Future insert() async {
+  Future<int> insert(PwdManager pwdManager) async {
     Database db = await getDatabase();
-    PwdManager pwdManager = PwdManager.fromJson(
-        {"id": Null, "title": "工商银行", "account": "ICBC", "password": "123456"});
+//    PwdManager pwdManager = PwdManager.fromJson(
+//        {"id": null, "title": "工商银行", "account": "ICBC", "password": "123456"});
     int i = await db.insert(_tableName, pwdManager.toJson());
     print("插入$i条数据");
+    return i;
   }
 
-  Future select() async {
+  Future<List<Map<String, dynamic>>> select() async {
     Database db = await getDatabase();
     List<Map<String, dynamic>> list = await db.query(_tableName);
     print(list);
+    return list;
   }
 }

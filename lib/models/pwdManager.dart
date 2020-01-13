@@ -6,10 +6,11 @@ part 'pwdManager.g.dart';
 class PwdManager {
     PwdManager();
 
-    int id;
+    num id;
     String title;
     String account;
     String password;
+    String salt;
     
     factory PwdManager.fromJson(Map<String,dynamic> json) => _$PwdManagerFromJson(json);
     Map<String, dynamic> toJson() => _$PwdManagerToJson(this);
