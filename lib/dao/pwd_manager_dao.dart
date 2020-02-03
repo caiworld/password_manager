@@ -12,7 +12,10 @@ class PwdManagerDao extends BaseDBProvider {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title text,
       account text,
-      password text
+      password text,
+      salt text,
+      createTime text,
+      updateTime text
     )
       """;
   }
@@ -25,17 +28,31 @@ class PwdManagerDao extends BaseDBProvider {
   /// 插入数据
   Future<int> insert(PwdManager pwdManager) async {
     Database db = await getDatabase();
-//    PwdManager pwdManager = PwdManager.fromJson(
-//        {"id": null, "title": "工商银行", "account": "ICBC", "password": "123456"});
-    int i = await db.insert(_tableName, pwdManager.toJson());
-    print("插入$i条数据");
-    return i;
+    try {
+      int id = 0;
+      for (int i = 0; i < 1; i++) {
+        id = await db.insert(_tableName, pwdManager.toJson());
+      }
+      print("插入的数据的id：$id");
+      return id;
+    } catch (e) {
+      print("dao插入数据失败，失败原因：{$e}");
+    }
+    return 0;
   }
 
-  Future<List<Map<String, dynamic>>> select() async {
+  Future<List<Map<String, dynamic>>> select(int page,
+      {int pageSize = 20}) async {
     Database db = await getDatabase();
-    List<Map<String, dynamic>> list = await db.query(_tableName);
-    print(list);
+//    List<Map<String, dynamic>> list = await db.query(
+//      _tableName,
+//      limit: pageSize,
+//      offset: (page - 1) * pageSize,
+//    );
+//    print(list);
+    List<Map<String, dynamic>> list = await db.rawQuery(
+        "select * from pwd_manager order by updateTime desc limit ? offset ?",
+        [pageSize, (page - 1) * pageSize]);
     return list;
   }
 }

@@ -33,6 +33,12 @@ dependencies:
   json_serializable: ^2.0.0
   # 加密
   flutter_string_encryption: ^0.3.1
+  # 保存数据
+  shared_preferences: ^0.4.2
+  # 无限加载 ListView
+  infinite_listview: ^1.0.1
+  flukit: 1.0.2
+  provider: 3.2.0
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/models/index.dart';
+import 'package:password_manager/models/provider_model.dart';
 import 'package:password_manager/service/pwd_manager_service.dart';
+import 'package:provider/provider.dart';
 
 /// 添加密码页面
 class AddPasswordRoute extends StatefulWidget {
@@ -19,10 +21,33 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
   TextEditingController _passwordController = new TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    PwdManager pwdManager = ModalRoute.of(context).settings.arguments;
+    bool isAdd = pwdManager == null;
+    if (!isAdd) {
+      // 此时页面是修改，输入框填充内容
+      _titleController.text = pwdManager.title;
+      _accountController.text = pwdManager.account;
+      _passwordController.text = pwdManager.password;
+      _titleController.selection = TextSelection.fromPosition(TextPosition(
+          affinity: TextAffinity.downstream,
+          offset: _titleController.text.length));
+      _accountController.selection = TextSelection.fromPosition(TextPosition(
+          affinity: TextAffinity.downstream,
+          offset: _accountController.text.length));
+      _passwordController.selection = TextSelection.fromPosition(TextPosition(
+          affinity: TextAffinity.downstream,
+          offset: _passwordController.text.length));
+    }
+    // 获取路由参数
     return Scaffold(
       appBar: AppBar(
-        title: Text("添加密码"),
+        title: Text(isAdd ? "添加密码" : "修改密码"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(5),
@@ -90,17 +115,22 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
     if (_formKey.currentState.validate()) {
       // 该方法表示当所有表单都通过时会返回true
       Utils.showLoading(context, "正在加密保存");
-      PwdManager pwdManager = new PwdManager();
-      pwdManager.title = "工商银行";
-      pwdManager.account = "ICBC";
-      pwdManager.password = "123456";
-      print("pwdManager.id:${pwdManager.id}");
-      int i = await PwdManagerService.insert(pwdManager);
-      print(i);
-      List<Map<String, dynamic>> list = await PwdManagerService.select();
-      print(list);
-      // 关闭加载弹窗
-      Navigator.of(context).pop();
+      try {
+        PwdManager pwdManager = new PwdManager();
+        pwdManager.title = _titleController.text;
+        pwdManager.account = _accountController.text;
+        pwdManager.password = _passwordController.text;
+        int id = await PwdManagerService.insert(pwdManager);
+      } catch (e) {
+        print(e);
+      } finally {
+        // 关闭加载弹窗
+        Navigator.of(context).pop();
+      }
+      Navigator.of(context).pop({"refresh":true});
+      Provider.of<HomeRefreshModel>(context).homeRefresh = true;
+//      List<PwdManager> list = await PwdManagerService.select(5, pageSize: 2);
+//      print(list);
     }
   }
 }

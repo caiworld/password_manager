@@ -39,7 +39,6 @@ class EncryptDecryptUtils {
       content = hex.encode(digest.bytes);
     }
     String result = hex.encode(digest.bytes);
-    print("MD5加密1000次：$result");
     return result;
   }
 }
