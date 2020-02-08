@@ -25,6 +25,8 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
     super.initState();
   }
 
+  int id;
+
   @override
   Widget build(BuildContext context) {
     PwdManager pwdManager = ModalRoute.of(context).settings.arguments;
@@ -43,6 +45,8 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
       _passwordController.selection = TextSelection.fromPosition(TextPosition(
           affinity: TextAffinity.downstream,
           offset: _passwordController.text.length));
+      // 设置原有id
+      id = pwdManager.id;
     }
     // 获取路由参数
     return Scaffold(
@@ -115,20 +119,30 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
     if (_formKey.currentState.validate()) {
       // 该方法表示当所有表单都通过时会返回true
       Utils.showLoading(context, "正在加密保存");
+      PwdManager pwdManager = new PwdManager();
       try {
-        PwdManager pwdManager = new PwdManager();
         pwdManager.title = _titleController.text;
         pwdManager.account = _accountController.text;
         pwdManager.password = _passwordController.text;
-        int id = await PwdManagerService.insert(pwdManager);
+        if (id != null) {
+          pwdManager.id = id;
+          int updateId = await PwdManagerService.update(pwdManager);
+        } else {
+          int insertId = await PwdManagerService.insert(pwdManager);
+        }
+//        int id2 = await PwdManagerService.insert(pwdManager);
+//        int id3 = await PwdManagerService.insert(pwdManager);
+//        int id4 = await PwdManagerService.insert(pwdManager);
+//        int id5 = await PwdManagerService.insert(pwdManager);
       } catch (e) {
         print(e);
       } finally {
         // 关闭加载弹窗
         Navigator.of(context).pop();
       }
-      Navigator.of(context).pop({"refresh":true});
       Provider.of<HomeRefreshModel>(context).homeRefresh = true;
+//      Navigator.of(context).pop({"refresh":true});
+      Navigator.of(context).pop(pwdManager);
 //      List<PwdManager> list = await PwdManagerService.select(5, pageSize: 2);
 //      print(list);
     }

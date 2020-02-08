@@ -38,9 +38,23 @@ class PwdManagerDao extends BaseDBProvider {
     } catch (e) {
       print("dao插入数据失败，失败原因：{$e}");
     }
-    return 0;
+    return 1;
   }
 
+  /// 修改数据
+  Future<int> update(PwdManager pwdManager) async {
+    Database db = await getDatabase();
+    try {
+      int line = await db.update(_tableName, pwdManager.toJson(),
+          where: "id=?", whereArgs: [pwdManager.id]);
+      print("修改：$line");
+    } catch (e) {
+      print("dao修改数据失败，失败原因：{$e}");
+    }
+    return 1;
+  }
+
+  /// 查询数据
   Future<List<Map<String, dynamic>>> select(int page,
       {int pageSize = 20}) async {
     Database db = await getDatabase();

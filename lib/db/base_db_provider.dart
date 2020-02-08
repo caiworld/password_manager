@@ -11,7 +11,7 @@ import 'package:sqflite/sqlite_api.dart';
 /// 由它直接和DBManager打交道，业务层实现这个接口即可。
 ///
 abstract class BaseDBProvider {
-  bool isTableExist = false;
+  static bool isTableExist = false;
 
   /// 返回一个表名
   String tableName();

@@ -7,7 +7,8 @@ class PwdManagerService {
   static PwdManagerDao _pwdManagerDao = new PwdManagerDao();
 
   /// 插入数据
-  static Future<int> insert(PwdManager pwdManager) async {
+  static Future<int> insert(PwdManager oriPwdManager) async {
+    PwdManager pwdManager = PwdManager.fromJson(oriPwdManager.toJson());
     PwdManager encryptedPwdManager = await EncryptDecryptUtils.encrypt(
         Global.getPwdMd5(), pwdManager.password);
     pwdManager.password = encryptedPwdManager.password;
@@ -17,6 +18,18 @@ class PwdManagerService {
     return await _pwdManagerDao.insert(pwdManager);
   }
 
+  /// 修改数据
+  static Future<int> update(PwdManager oriPwdManager) async {
+    PwdManager pwdManager = PwdManager.fromJson(oriPwdManager.toJson());
+    PwdManager encryptedPwdManager = await EncryptDecryptUtils.encrypt(
+        Global.getPwdMd5(), pwdManager.password);
+    pwdManager.password = encryptedPwdManager.password;
+    pwdManager.salt = encryptedPwdManager.salt;
+    pwdManager.updateTime = DateTime.now().toString();
+    return await _pwdManagerDao.update(pwdManager);
+  }
+
+  /// 查询数据
   static Future<List<PwdManager>> select(int page, {int pageSize}) async {
     List<Map<String, dynamic>> list;
     if (pageSize == null) {

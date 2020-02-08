@@ -39,6 +39,8 @@ dependencies:
   infinite_listview: ^1.0.1
   flukit: 1.0.2
   provider: 3.2.0
+  # 下来刷新上拉加载
+  pull_to_refresh: ^1.5.7
 
 dev_dependencies:
   flutter_test:

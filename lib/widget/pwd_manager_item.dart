@@ -16,7 +16,7 @@ class _PwdManagerItemState extends State<PwdManagerItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
+      padding: const EdgeInsets.only(top: 80.0),
       child: Material(
         color: Colors.white,
         shape: BorderDirectional(
@@ -26,7 +26,7 @@ class _PwdManagerItemState extends State<PwdManagerItem> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(top: 0.0, bottom: 0),
+          padding: const EdgeInsets.only(top: 0.0, bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -50,20 +50,42 @@ class _PwdManagerItemState extends State<PwdManagerItem> {
                   ],
                 ),
               ),
-              ListTile(
-                dense: true,
-                leading: Text(
-                  widget.pwdManager.account,
-                ),
-                trailing: Text(
-                  widget.pwdManager.password,
-                  textAlign: TextAlign.end,
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(
-                    fontSize: 15,
-                  ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 3, 8, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      widget.pwdManager.account,
+                      style: TextStyle(
+                        color: Color(0xFF999999),
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      widget.pwdManager.password,
+                      style: TextStyle(
+                        color: Color(0xFF999999),
+                        fontSize: 16,
+                      ),
+                    )
+                  ],
                 ),
               ),
+//              ListTile(
+//                dense: true,
+//                leading: Text(
+//                  widget.pwdManager.account,
+//                ),
+//                trailing: Text(
+//                  widget.pwdManager.password,
+//                  textAlign: TextAlign.end,
+//                  textDirection: TextDirection.rtl,
+//                  style: TextStyle(
+//                    fontSize: 15,
+//                  ),
+//                ),
+//              ),
             ],
           ),
         ),
