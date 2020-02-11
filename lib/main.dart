@@ -11,6 +11,7 @@ import 'package:password_manager/route/login_route.dart';
 import 'package:password_manager/route/register_route.dart';
 import 'package:password_manager/service/pwd_manager_service.dart';
 import 'package:password_manager/widget/loading_view.dart';
+import 'package:password_manager/widget/my_drawer.dart';
 import 'package:password_manager/widget/pwd_manager_item.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _buildHome() {
-    if (Global.getPwdMd5().isNotEmpty) {
+    if (Global.getPwdMd5() != null && Global.getPwdMd5().isNotEmpty) {
       return LoginRoute();
     } else {
       return RegisterRoute();
@@ -93,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ],
       ),
       body: _buildBody(),
+      drawer: MyDrawer(),
     );
   }
 
@@ -177,55 +179,58 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   bool isReq = false;
 
   Widget _listView() {
-    return SmartRefresher(
-      controller: _refreshController,
-      onRefresh: _refreshData,
-      onLoading: _loadData,
-      enablePullUp: true,
-      footer: CustomFooter(
-        builder: (BuildContext context, LoadStatus mode) {
-          Widget body;
-          if (mode == LoadStatus.idle) {
-            body = Text("pull up load");
-          } else if (mode == LoadStatus.loading) {
-            body = CupertinoActivityIndicator();
-          } else if (mode == LoadStatus.failed) {
-            body = Text("Load Failed!Click retry!");
-          } else if (mode == LoadStatus.canLoading) {
-            body = Text("release to load more");
-          } else {
-            body = Text("No more Data");
-          }
-          return Container(
-            height: 55.0,
-            child: Center(child: body),
-          );
-        },
+    return RefreshConfiguration(
+      hideFooterWhenNotFull:true,
+      child: SmartRefresher(
+        controller: _refreshController,
+        onRefresh: _refreshData,
+        onLoading: _loadData,
+        enablePullUp: true,
+        footer: CustomFooter(
+          builder: (BuildContext context, LoadStatus mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("pull up load");
+            } else if (mode == LoadStatus.loading) {
+              body = CupertinoActivityIndicator();
+            } else if (mode == LoadStatus.failed) {
+              body = Text("Load Failed!Click retry!");
+            } else if (mode == LoadStatus.canLoading) {
+              body = Text("release to load more");
+            } else {
+              body = Text("No more Data");
+            }
+            return Container(
+              height: 55.0,
+              child: Center(child: body),
+            );
+          },
+        ),
+        child: isReq
+            ? listNotEmpty(data)
+                ? ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        child: PwdManagerItem(data[index]),
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed("AddPasswordRoute",
+                                  arguments: data[index])
+                              .then((pwdManagerModel) {
+                            data[index] = pwdManagerModel;
+                          });
+                        },
+                      );
+                    })
+                : Center(
+                    child: Text(
+                      "暂无数据",
+                      style: Theme.of(context).textTheme.display1,
+                    ),
+                  )
+            : LoadingView(),
       ),
-      child: isReq
-          ? listNotEmpty(data)
-              ? ListView.builder(
-                  itemCount: data.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      child: PwdManagerItem(data[index]),
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed("AddPasswordRoute",
-                                arguments: data[index])
-                            .then((pwdManagerModel) {
-                          data[index] = pwdManagerModel;
-                        });
-                      },
-                    );
-                  })
-              : Center(
-                  child: Text(
-                    "暂无数据",
-                    style: Theme.of(context).textTheme.display1,
-                  ),
-                )
-          : LoadingView(),
     );
   }
 

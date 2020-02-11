@@ -10,7 +10,7 @@ class Global {
   /// 初始化全局信息
   static Future init() async {
     _prefs = await SharedPreferences.getInstance();
-    savePassword("123456");
+//    savePassword("123456");
   }
 
   /// 保存用户终极密码

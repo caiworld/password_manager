@@ -70,7 +70,7 @@ class _RegisterRouteState extends State<RegisterRoute> {
                 child: ConstrainedBox(
                   constraints: BoxConstraints.expand(height: 55),
                   child: RaisedButton(
-                    onPressed: _register,
+                    onPressed: _register(),
                     child: Text("进入"),
                     color: Theme.of(context).primaryColor,
                     textColor: Colors.white,
