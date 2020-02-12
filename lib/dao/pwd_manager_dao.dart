@@ -1,3 +1,4 @@
+import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/db/base_db_provider.dart';
 import 'package:password_manager/models/index.dart';
 import 'package:sqflite/sqflite.dart';
@@ -68,5 +69,44 @@ class PwdManagerDao extends BaseDBProvider {
         "select * from pwd_manager order by updateTime desc limit ? offset ?",
         [pageSize, (page - 1) * pageSize]);
     return list;
+  }
+
+  /// 查询所有数据
+  Future<List<Map<String, dynamic>>> selectAll() async {
+    Database db = await getDatabase();
+    List<Map<String, dynamic>> list = await db.query(_tableName);
+    print(list);
+    return list;
+  }
+
+  ///
+  /// 批量修改
+  /// password 为用户终极密码
+  ///
+  Future updatePatch(List<PwdManager> list, String pwdMd5) async {
+    print("list:$list");
+    Database db = await getDatabase();
+    var result = await db.transaction((txn) async {
+      Batch batch = txn.batch();
+      list.forEach((pwdManager) => batch.update(_tableName, pwdManager.toJson(),
+          where: "id=?", whereArgs: [pwdManager.id]));
+      // 修改用户终极密码
+      Global.saveBySharedPreferences("password", pwdMd5);
+      var result = await batch.commit();
+      print("批量修改1：$result");
+      return result;
+    });
+    print("批量修改2：$result");
+    bool success = true;
+    for (int i = 0; i < result.length; i++) {
+      if (result[i] < 1) {
+        success = false;
+        break;
+      }
+    }
+    if (success) {
+      Global.pwdMd5 = pwdMd5;
+    }
+    return success;
   }
 }

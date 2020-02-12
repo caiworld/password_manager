@@ -19,6 +19,11 @@ class Global {
     _prefs.setString("password", value);
   }
 
+  /// 通过 SharedPreferences 保存数据
+  static Future<bool> saveBySharedPreferences(String key, String value) {
+    return _prefs.setString(key, value);
+  }
+
   /// 获取用户终极密码
   static String getPwdMd5() {
     // TODO 优化：将获取到的密码赋值给全局变量，这样获取时可以先判断有没有获取过，

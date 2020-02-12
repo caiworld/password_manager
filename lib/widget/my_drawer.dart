@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:password_manager/common/utils.dart';
 
@@ -17,7 +15,7 @@ class MyDrawer extends StatelessWidget {
               // 构建抽屉菜单头部
               _buildHeader(context),
               // 构建功能菜单
-              Expanded(child: _buildMenus()),
+              Expanded(child: _buildMenus(context)),
             ],
           )),
     );
@@ -53,18 +51,23 @@ class MyDrawer extends StatelessWidget {
   }
 
   /// 构建功能菜单
-  Widget _buildMenus() {
+  Widget _buildMenus(BuildContext context) {
     return ListView(
       children: <Widget>[
         ListTile(
           leading: const Icon(Icons.color_lens),
           title: Text("主题"),
-          onTap: () => {Utils.showToast("切换主题")},
+          onTap: () {
+            Utils.showToast("切换主题");
+          },
         ),
         ListTile(
           leading: const Icon(Icons.security),
           title: Text("修改密码"),
-          onTap: () => Utils.showToast("修改密码"),
+          onTap: () {
+            Navigator.of(context).pushNamed("UpdatePasswordRoute");
+            Utils.showToast("修改密码");
+          },
         )
       ],
     );

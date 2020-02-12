@@ -4,11 +4,13 @@ import 'package:flukit/flukit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:password_manager/common/Global.dart';
+import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/models/index.dart';
 import 'package:password_manager/models/provider_model.dart';
 import 'package:password_manager/route/add_password_route.dart';
 import 'package:password_manager/route/login_route.dart';
 import 'package:password_manager/route/register_route.dart';
+import 'package:password_manager/route/update_password_route.dart';
 import 'package:password_manager/service/pwd_manager_service.dart';
 import 'package:password_manager/widget/loading_view.dart';
 import 'package:password_manager/widget/my_drawer.dart';
@@ -42,6 +44,7 @@ class MyApp extends StatelessWidget {
               "AddPasswordRoute": (context) => AddPasswordRoute(),
               "MyHomePageRoute": (context) => MyHomePage(title: "密码管理器"),
               "LoginRoute": (context) => LoginRoute(),
+              "UpdatePasswordRoute": (context) => UpdatePasswordRoute(),
             },
           );
         },
@@ -86,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     .then((pwdManagerModel) {
                   if (pwdManagerModel != null) {
                     setState(() {
-                      data.add(pwdManagerModel);
+                      data.insert(0, pwdManagerModel);
                     });
                   }
                 });
@@ -345,41 +348,44 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   /// 生命周期方法
   @override
   void initState() {
+    super.initState();
     print("_MyHomePageRouteState:");
     print("initState");
 //    _getData(true);
     _getData();
-    super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void didChangeDependencies() {
-    print("didChangeDependencies");
     super.didChangeDependencies();
+    print("didChangeDependencies");
   }
 
   @override
   void didUpdateWidget(MyHomePage oldWidget) {
-    print("didUpdateWidget");
     super.didUpdateWidget(oldWidget);
+    print("didUpdateWidget");
   }
 
   @override
   void deactivate() {
-    print("deactivate");
     super.deactivate();
+    print("deactivate");
   }
 
   @override
   void dispose() {
-    print("dispose");
     super.dispose();
+    print("dispose");
+    Utils.showToast("退出");
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print("生命周期：${state.toString()}");
-    // TODO 使用真机验证生命周期
+    // TODO 探索生命周期，学习在软件进入后台时清除密码 ? springboot + 邮件服务
     switch (state) {
       case AppLifecycleState.inactive:
         print('AppLifecycleState.inactive');
