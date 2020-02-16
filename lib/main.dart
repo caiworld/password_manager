@@ -7,6 +7,7 @@ import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/models/index.dart';
 import 'package:password_manager/models/provider_model.dart';
+import 'package:password_manager/route/account_manager_route.dart';
 import 'package:password_manager/route/add_password_route.dart';
 import 'package:password_manager/route/login_route.dart';
 import 'package:password_manager/route/register_route.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
               "MyHomePageRoute": (context) => MyHomePage(title: "密码管理器"),
               "LoginRoute": (context) => LoginRoute(),
               "UpdatePasswordRoute": (context) => UpdatePasswordRoute(),
+              "AccountManagerRoute": (context) => AccountManagerRoute(),
             },
           );
         },
@@ -183,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   Widget _listView() {
     return RefreshConfiguration(
-      hideFooterWhenNotFull:true,
+      hideFooterWhenNotFull: true,
       child: SmartRefresher(
         controller: _refreshController,
         onRefresh: _refreshData,

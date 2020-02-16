@@ -24,6 +24,11 @@ class Global {
     return _prefs.setString(key, value);
   }
 
+  /// 获取 SharedPreferences 保存的数据
+  static dynamic getBySharedPreferences(String key){
+    return _prefs.get(key);
+  }
+
   /// 获取用户终极密码
   static String getPwdMd5() {
     // TODO 优化：将获取到的密码赋值给全局变量，这样获取时可以先判断有没有获取过，

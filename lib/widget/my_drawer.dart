@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -36,17 +37,23 @@ class MyDrawer extends StatelessWidget {
                 width: 80,
               ),
             ),
-            Text(
-              "密码管理",
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-            ),
+            _buildAccount(),
           ],
         ),
       ),
       onTap: () {
         Utils.showToast("密码管理工具");
+        Navigator.of(context).pushNamed("AccountManagerRoute");
       },
+    );
+  }
+
+  /// 构建邮箱账号
+  Widget _buildAccount() {
+    String account = Global.getBySharedPreferences("account");
+    return Text(
+      account ?? "绑定邮箱",
+      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
     );
   }
 
