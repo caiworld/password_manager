@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/models/index.dart';
 import 'package:password_manager/models/provider_model.dart';
+import 'package:password_manager/service/http_service.dart';
 import 'package:password_manager/service/pwd_manager_service.dart';
 import 'package:provider/provider.dart';
 
@@ -113,22 +115,23 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
     );
   }
 
-  /// 保存
+  /// 保存 TODO 保存的时候发送密码到邮箱，另外还要在侧边栏添加一个发送所有密码到邮箱的操作
   _save() async {
     // 保存之前先进行校验各个表单字段是否合法
     if (_formKey.currentState.validate()) {
       // 该方法表示当所有表单都通过时会返回true
       Utils.showLoading(context, "正在加密保存");
       PwdManager pwdManager = new PwdManager();
+      int dataId;
       try {
         pwdManager.title = _titleController.text;
         pwdManager.account = _accountController.text;
         pwdManager.password = _passwordController.text;
         if (id != null) {
           pwdManager.id = id;
-          int updateId = await PwdManagerService.update(pwdManager);
+          dataId = await PwdManagerService.update(pwdManager);
         } else {
-          int insertId = await PwdManagerService.insert(pwdManager);
+          dataId = await PwdManagerService.insert(pwdManager);
         }
 //        int id2 = await PwdManagerService.insert(pwdManager);
 //        int id3 = await PwdManagerService.insert(pwdManager);
@@ -139,6 +142,28 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
       } finally {
         // 关闭加载弹窗
         Navigator.of(context).pop();
+      }
+      // 发送密码到邮箱
+      String account = Global.getBySharedPreferences("account");
+      Map result;
+      if (account != null) {
+        HttpService httpService = new HttpService();
+        if (Global.getBySharedPreferences("type") == "all") {
+          // 查询所有密码信息
+          List<Map<String, dynamic>> list = await PwdManagerService.selectAll();
+          result = await httpService.sendPassword(
+              account, "password_manager:All", list.toString());
+        } else {
+          // 通过id获取密码
+          List<Map<String, dynamic>> newPwdManager =
+              await PwdManagerService.getPwdById(dataId);
+          // 将当前密码信息发送邮件
+          result = await httpService.sendPassword(
+              account, "password_manager:one", newPwdManager.toString());
+        }
+      }
+      if (result != null) {
+        Utils.showToast(result["msg"]);
       }
       Provider.of<HomeRefreshModel>(context).homeRefresh = true;
 //      Navigator.of(context).pop({"refresh":true});

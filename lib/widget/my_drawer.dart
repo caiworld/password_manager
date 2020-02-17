@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
+import 'package:password_manager/models/index.dart';
+import 'package:password_manager/service/http_service.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
@@ -64,8 +66,10 @@ class MyDrawer extends StatelessWidget {
         ListTile(
           leading: const Icon(Icons.color_lens),
           title: Text("主题"),
-          onTap: () {
+          onTap: () async {
             Utils.showToast("切换主题");
+            HttpService httpService = new HttpService();
+            print(await httpService.test());
           },
         ),
         ListTile(

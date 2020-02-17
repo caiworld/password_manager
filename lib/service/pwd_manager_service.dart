@@ -48,6 +48,10 @@ class PwdManagerService {
     return result;
   }
 
+  static Future<List<Map<String, dynamic>>> selectAll() async {
+    return _pwdManagerDao.selectAll();
+  }
+
   /// 修改用户终极密码
   static Future<bool> updatePassword(
       String oldPassword, String newPassword) async {
@@ -96,5 +100,10 @@ class PwdManagerService {
     var result = await _pwdManagerDao.updatePatch(list, newPwdMd5);
     print("修改用户终极密码：$result");
     return true;
+  }
+
+  /// 通过id获取密码
+  static Future<List<Map<String, dynamic>>> getPwdById(int id) async {
+    return _pwdManagerDao.selectPwdById(id);
   }
 }

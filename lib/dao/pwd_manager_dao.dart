@@ -109,4 +109,12 @@ class PwdManagerDao extends BaseDBProvider {
     }
     return success;
   }
+
+  /// 通过 id 查询密码
+  Future<List<Map<String, dynamic>>> selectPwdById(int id) async {
+    Database db = await getDatabase();
+    List<Map<String, dynamic>> list =
+        await db.rawQuery("select * from $_tableName where id = ?", [id]);
+    return list;
+  }
 }
