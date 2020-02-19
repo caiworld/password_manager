@@ -59,7 +59,8 @@ class MyDrawer extends StatelessWidget {
     );
   }
 
-  /// 构建功能菜单
+  /// 构建功能菜单 TODO 添加主题设置、中英文设置、导入恢复密码设置、一键发送所有密码到邮箱的设置
+  ///  TODO 探索没有网络时的情况、不设置邮箱的情况
   Widget _buildMenus(BuildContext context) {
     return ListView(
       children: <Widget>[

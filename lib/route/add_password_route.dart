@@ -115,7 +115,7 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
     );
   }
 
-  /// 保存 TODO 保存的时候发送密码到邮箱，另外还要在侧边栏添加一个发送所有密码到邮箱的操作
+  /// 保存 TODO 另外还要在侧边栏添加一个发送所有密码到邮箱的操作
   _save() async {
     // 保存之前先进行校验各个表单字段是否合法
     if (_formKey.currentState.validate()) {
