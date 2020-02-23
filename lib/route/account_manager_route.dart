@@ -25,6 +25,7 @@ class _AccountManagerRouteState extends State<AccountManagerRoute> {
               onPressed: () async {
                 // 校验邮箱
                 if (_formKey.currentState.validate()) {
+                  // TODO 进行邮箱在线校验
                   // 保存邮箱
                   await Global.saveBySharedPreferences(
                       "account", _accountController.text);

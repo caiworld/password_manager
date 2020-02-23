@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
@@ -152,14 +154,14 @@ class _AddPasswordRouteState extends State<AddPasswordRoute> {
           // 查询所有密码信息
           List<Map<String, dynamic>> list = await PwdManagerService.selectAll();
           result = await httpService.sendPassword(
-              account, "password_manager:All", list.toString());
+              account, "password_manager:All", json.encode(list));
         } else {
           // 通过id获取密码
           List<Map<String, dynamic>> newPwdManager =
               await PwdManagerService.getPwdById(dataId);
           // 将当前密码信息发送邮件
           result = await httpService.sendPassword(
-              account, "password_manager:one", newPwdManager.toString());
+              account, "password_manager:one", json.encode(newPwdManager));
         }
       }
       if (result != null) {

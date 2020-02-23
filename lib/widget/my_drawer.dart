@@ -4,7 +4,14 @@ import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/models/index.dart';
 import 'package:password_manager/service/http_service.dart';
 
-class MyDrawer extends StatelessWidget {
+class MyDrawer extends StatefulWidget {
+  @override
+  State<MyDrawer> createState() {
+    return _MyDrawerState();
+  }
+}
+
+class _MyDrawerState extends State<MyDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -59,7 +66,7 @@ class MyDrawer extends StatelessWidget {
     );
   }
 
-  /// 构建功能菜单 TODO 添加主题设置、中英文设置、导入恢复密码设置、一键发送所有密码到邮箱的设置
+  /// 构建功能菜单 TODO 导入恢复密码设置、一键发送所有密码到邮箱的设置、添加主题设置、中英文设置
   ///  TODO 探索没有网络时的情况、不设置邮箱的情况
   Widget _buildMenus(BuildContext context) {
     return ListView(
@@ -80,8 +87,72 @@ class MyDrawer extends StatelessWidget {
             Navigator.of(context).pushNamed("UpdatePasswordRoute");
             Utils.showToast("修改密码");
           },
+        ),
+        ListTile(
+//          leading: const Icon(Icons.sync),
+          leading: const Icon(Icons.backup),
+          title: Text("同步所有密码到邮箱"),
+          onTap: _backup,
+        ),
+        ListTile(
+          leading: const Icon(Icons.restore),
+          title: Text("导入密码"),
+          onTap: () {
+            // 跳转到新页面
+            Navigator.of(context).pushNamed("RestorePasswordRoute");
+          },
         )
       ],
     );
+  }
+
+  Future _backup() async {
+    // 先看有没有绑定邮箱，没有绑定的话给出提示（要不要再跳转到绑定邮箱页面?）
+    String account = Global.getBySharedPreferences("account");
+    if (account != null && account.isNotEmpty) {
+      // 绑定邮箱后弹窗确认
+      bool result = await _showBackupDialog();
+      if (result != null && result) {
+        // result为true表示确认备份
+        // 弹出加载框
+        Utils.showLoading(context, "备份中，请稍候...");
+        // 发送备份请求
+        HttpService httpService = HttpService();
+        Map result = await httpService.backupPassword();
+        // 关闭加载框
+        Navigator.of(context).pop();
+        // 吐司备份结果
+        Utils.showToast(result["msg"]);
+      }
+    } else {
+      Utils.showToast("请先绑定邮箱！");
+      // TODO 要不要跳转到绑定邮箱页面?
+    }
+  }
+
+  /// 展示备份弹窗
+  Future<bool> _showBackupDialog() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("备份"),
+            content: Text("你确定要备份所有密码到邮箱吗?"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("取消"),
+              ),
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text("确定"),
+              ),
+            ],
+          );
+        });
   }
 }

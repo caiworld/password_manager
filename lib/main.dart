@@ -11,6 +11,7 @@ import 'package:password_manager/route/account_manager_route.dart';
 import 'package:password_manager/route/add_password_route.dart';
 import 'package:password_manager/route/login_route.dart';
 import 'package:password_manager/route/register_route.dart';
+import 'package:password_manager/route/restore_password_route.dart';
 import 'package:password_manager/route/update_password_route.dart';
 import 'package:password_manager/service/pwd_manager_service.dart';
 import 'package:password_manager/widget/loading_view.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
               "LoginRoute": (context) => LoginRoute(),
               "UpdatePasswordRoute": (context) => UpdatePasswordRoute(),
               "AccountManagerRoute": (context) => AccountManagerRoute(),
+              "RestorePasswordRoute": (context) => RestorePasswordRoute(),
             },
           );
         },
