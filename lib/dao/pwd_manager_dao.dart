@@ -117,4 +117,18 @@ class PwdManagerDao extends BaseDBProvider {
         await db.rawQuery("select * from $_tableName where id = ?", [id]);
     return list;
   }
+
+  Future<bool> insertBatch(List<PwdManager> list) async {
+    Database db = await getDatabase();
+    var result = await db.transaction((txn) async {
+      // TODO 测试事务失败情况
+      Batch batch = txn.batch();
+      list.forEach(
+          (pwdManager) => batch.insert(_tableName, pwdManager.toJson()));
+      var result1 = await batch.commit();
+      print("批量插入1：$result1");
+      return result1;
+    });
+    return true;
+  }
 }

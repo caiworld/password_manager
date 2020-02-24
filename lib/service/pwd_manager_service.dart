@@ -106,4 +106,9 @@ class PwdManagerService {
   static Future<List<Map<String, dynamic>>> getPwdById(int id) async {
     return _pwdManagerDao.selectPwdById(id);
   }
+
+  /// 添加多个PwdManager
+  static Future<bool> addPwdManagerList(List<PwdManager> list) async {
+    return _pwdManagerDao.insertBatch(list);
+  }
 }

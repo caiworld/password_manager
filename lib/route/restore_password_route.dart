@@ -1,8 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:password_manager/common/Global.dart';
+import 'package:password_manager/common/encrypt_decrypt_utils.dart';
 import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/models/index.dart';
+import 'package:password_manager/service/pwd_manager_service.dart';
 
 /// 解析导入密码页面
 class RestorePasswordRoute extends StatefulWidget {
@@ -83,9 +86,44 @@ class _RestorePasswordRouteState extends State<RestorePasswordRoute> {
 //                              .cast();
                       List list = json.decode(_controller.text);
                       List<PwdManager> result = List<PwdManager>();
-                      list.forEach((item){
-                        result.add(PwdManager.fromJson(item));
-                      });
+                      // 将原终极密码进行千次md5
+                      String oldPwdMd5 =
+                          EncryptDecryptUtils.md5Thousand(_pwdController.text);
+                      String newPwdMd5 = Global.getPwdMd5();
+                      for (var item in list) {
+                        PwdManager oldPwd = PwdManager.fromJson(item);
+                        String decryptPasswordStr =
+                            await EncryptDecryptUtils.decrypt(
+                                oldPwdMd5, oldPwd);
+                        if (decryptPasswordStr == null) {
+                          break;
+                        }
+                        // 重新加密
+                        PwdManager encryptPwdManager =
+                            await EncryptDecryptUtils.encrypt(
+                                newPwdMd5, decryptPasswordStr);
+                        oldPwd.id = null;
+                        oldPwd.password = encryptPwdManager.password;
+                        oldPwd.salt = encryptPwdManager.salt;
+                        oldPwd.updateTime = DateTime.now().toString();
+                        result.add(oldPwd);
+                      }
+                      if (result.length != list.length) {
+                        // 说明解密失败，可能是终极密码不对
+                        Utils.showToast("解析失败");
+                        return;
+                      }
+                      // 导入
+                      bool success =
+                          await PwdManagerService.addPwdManagerList(result);
+                      print("导入:$success");
+                      // 导入成功
+                      if(success){
+                        Utils.showToast("导入成功");
+                        // TODO 发送密码到邮箱
+
+                        Navigator.of(context).pop();
+                      }
                     },
                     child: Text("解析并导入"),
                   ),

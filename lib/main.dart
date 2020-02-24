@@ -375,6 +375,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void deactivate() {
     super.deactivate();
+    // TODO 如果导入数据后想刷新首页，可以让导入数据页面返回到首页，并给出一个标记
+    // 然后在此处进行刷新页面
+//    _refreshData();
     print("deactivate");
   }
 

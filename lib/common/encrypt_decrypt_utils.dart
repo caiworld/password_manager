@@ -25,7 +25,12 @@ class EncryptDecryptUtils {
   /// 解密
   static Future<String> decrypt(String pwdMd5, PwdManager pwdManager) async {
     String key = await cryptor.generateKeyFromPassword(pwdMd5, pwdManager.salt);
-    String result = await cryptor.decrypt(pwdManager.password, key);
+    String result;
+    try {
+      result = await cryptor.decrypt(pwdManager.password, key);
+    } catch (e) {
+      print("解密失败：$e");
+    }
     return result;
   }
 

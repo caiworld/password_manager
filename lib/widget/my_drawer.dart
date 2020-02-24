@@ -41,15 +41,19 @@ class _MyDrawerState extends State<MyDrawer> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Image.asset(
-                "imgs/ic_launcher.png",
-                width: 80,
+              // TODO ClipOval ?当没使用该控件时，打开侧边栏时会闪一下
+              child: ClipOval(
+                child: Image.asset(
+                  "imgs/ic_launcher.png",
+                  width: 80,
+                  height: 80,
+                ),
               ),
             ),
             _buildAccount(),
           ],
         ),
-      ),
+    ),
       onTap: () {
         Utils.showToast("密码管理工具");
         Navigator.of(context).pushNamed("AccountManagerRoute");
@@ -60,6 +64,7 @@ class _MyDrawerState extends State<MyDrawer> {
   /// 构建邮箱账号
   Widget _buildAccount() {
     String account = Global.getBySharedPreferences("account");
+    // TODO 设置成只显示一行，当有多余的时候，就让文字滚动显示
     return Text(
       account ?? "绑定邮箱",
       style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
@@ -100,6 +105,20 @@ class _MyDrawerState extends State<MyDrawer> {
           onTap: () {
             // 跳转到新页面
             Navigator.of(context).pushNamed("RestorePasswordRoute");
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.fingerprint),
+          title: Text("指纹登录"),
+          onTap: () {
+            Utils.showToast("开通指纹登陆");
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.language),
+          title: Text("国际化"),
+          onTap: () {
+            Utils.showToast("设置国际化");
           },
         )
       ],
