@@ -14,6 +14,7 @@ import 'package:password_manager/route/register_route.dart';
 import 'package:password_manager/route/restore_password_route.dart';
 import 'package:password_manager/route/update_password_route.dart';
 import 'package:password_manager/service/pwd_manager_service.dart';
+import 'package:password_manager/service/service_locator.dart';
 import 'package:password_manager/widget/loading_view.dart';
 import 'package:password_manager/widget/my_drawer.dart';
 import 'package:password_manager/widget/pwd_manager_item.dart';
@@ -22,6 +23,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:password_manager/common/check.dart';
 
 void main() {
+  setupLocator();
   Global.init().then((e) => runApp(MyApp()));
 }
 

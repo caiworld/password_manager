@@ -43,6 +43,9 @@ dependencies:
   pull_to_refresh: ^1.5.7
   # 网络请求
   dio: ^3.0.7
+  # 指纹验证
+  local_auth: ^0.5.2+3
+  get_it: ^1.0.3+2
 
 dev_dependencies:
   flutter_test:

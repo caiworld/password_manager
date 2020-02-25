@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
-import 'package:password_manager/models/index.dart';
 import 'package:password_manager/service/http_service.dart';
+import 'package:password_manager/service/local_authentication_service.dart';
 
 class MyDrawer extends StatefulWidget {
   @override
@@ -12,6 +12,9 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
+
+  final LocalAuthenticationService _localAuth = LocalAuthenticationService();
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -53,7 +56,7 @@ class _MyDrawerState extends State<MyDrawer> {
             _buildAccount(),
           ],
         ),
-    ),
+      ),
       onTap: () {
         Utils.showToast("密码管理工具");
         Navigator.of(context).pushNamed("AccountManagerRoute");
@@ -110,8 +113,9 @@ class _MyDrawerState extends State<MyDrawer> {
         ListTile(
           leading: const Icon(Icons.fingerprint),
           title: Text("指纹登录"),
-          onTap: () {
-            Utils.showToast("开通指纹登陆");
+          onTap: () async{
+//            Utils.showToast("开通指纹登陆");
+            await _localAuth.authenticate();
           },
         ),
         ListTile(
@@ -120,11 +124,19 @@ class _MyDrawerState extends State<MyDrawer> {
           onTap: () {
             Utils.showToast("设置国际化");
           },
+        ),
+        ListTile(
+          leading: const Icon(Icons.feedback),
+          title: Text("反馈意见"),
+          onTap: () {
+            Utils.showToast("反馈意见");
+          },
         )
       ],
     );
   }
 
+  /// 同步所有密码到邮箱
   Future _backup() async {
     // 先看有没有绑定邮箱，没有绑定的话给出提示（要不要再跳转到绑定邮箱页面?）
     String account = Global.getBySharedPreferences("account");
