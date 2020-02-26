@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
+import 'package:password_manager/service/local_authentication_service.dart';
 
 /// 账户管理页面
 class AccountManagerRoute extends StatefulWidget {
@@ -12,7 +13,13 @@ class _AccountManagerRouteState extends State<AccountManagerRoute> {
   TextEditingController _accountController = TextEditingController();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  bool check = (Global.getBySharedPreferences("type") ?? "one") == "all";
+  bool sendAll = (Global.getBySharedPreferences("type") ?? "one") == "all";
+
+  /// 是否开通指纹登录
+  bool fingerprintAuth =
+      Global.getBoolBySharedPreferences("fingerprintAuth") ?? false;
+
+  final LocalAuthenticationService _localAuth = LocalAuthenticationService();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +38,7 @@ class _AccountManagerRouteState extends State<AccountManagerRoute> {
                       "account", _accountController.text);
                   // 保存发送密码的形式
                   await Global.saveBySharedPreferences(
-                      "type", check ? "all" : "one");
+                      "type", sendAll ? "all" : "one");
                   Utils.showToast("保存成功");
                   Navigator.of(context).pop();
                 }
@@ -62,15 +69,49 @@ class _AccountManagerRouteState extends State<AccountManagerRoute> {
                   children: <Widget>[
                     Text("仅发送新增时的密码"),
                     Switch(
-                      value: check,
+                      value: sendAll,
                       onChanged: (bool val) {
                         this.setState(() {
-                          check = val;
+                          sendAll = val;
                         });
                       },
                     ),
                     Text("每次发送所有密码"),
                   ],
+                ),
+//                SwitchListTile(
+//                  title: Text("仅发送新增时的密码 / 每次发送所有密码"),
+//                  selected: true,
+//                  value: sendAll,
+//                  onChanged: (bool val) {
+//                    this.setState(() {
+//                      sendAll = val;
+//                    });
+//                  },
+//                ),
+                CheckboxListTile(
+                  value: fingerprintAuth,
+                  onChanged: (newValue) async {
+                    // 校验该手机是否支持指纹登陆
+                    bool canCheckBiometrics =
+                        await _localAuth.checkBiometrics();
+                    if (!canCheckBiometrics) {
+                      return;
+                    }
+                    // 进行指纹校验
+                    bool isAuthenticate = await _localAuth.authenticate();
+                    // 校验成功更新选择框
+                    if (isAuthenticate) {
+                      Global.saveBoolBySharedPreferences(
+                          "fingerprintAuth", newValue);
+                      setState(() {
+                        fingerprintAuth = newValue;
+                      });
+                    }
+                  },
+                  title: Text('开通指纹登录'),
+                  selected: true,
+                  secondary: Icon(Icons.fingerprint),
                 ),
               ],
             ),

@@ -19,14 +19,14 @@ class Global {
     _prefs.setString("password", value);
   }
 
-  /// 通过 SharedPreferences 保存数据
+  /// 通过 SharedPreferences 保存 string 数据
   static Future<bool> saveBySharedPreferences(String key, String value) {
     return _prefs.setString(key, value);
   }
 
-  /// 获取 SharedPreferences 保存的数据
-  static dynamic getBySharedPreferences(String key){
-    return _prefs.get(key);
+  /// 获取 SharedPreferences 保存 string 的数据
+  static String getBySharedPreferences(String key) {
+    return _prefs.getString(key);
   }
 
   /// 获取用户终极密码
@@ -38,5 +38,15 @@ class Global {
       return pwdMd5;
     }
     return pwdMd5;
+  }
+
+  /// 通过 SharedPreferences 保存 bool 数据
+  static Future<bool> saveBoolBySharedPreferences(String key, bool value) {
+    return _prefs.setBool(key, value);
+  }
+
+  /// 获取 SharedPreferences 保存 bool 的数据
+  static bool getBoolBySharedPreferences(String key) {
+    return _prefs.getBool(key);
   }
 }

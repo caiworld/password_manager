@@ -4,6 +4,7 @@ import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/encrypt_decrypt_utils.dart';
 import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/main.dart';
+import 'package:password_manager/service/local_authentication_service.dart';
 
 class LoginRoute extends StatefulWidget {
   @override
@@ -17,8 +18,36 @@ class _LoginRouteState extends State<LoginRoute> {
   TextEditingController _controller = new TextEditingController();
   bool pwdShow = false;
 
+  /// 是否开通指纹登录
+  bool fingerprintAuth =
+      Global.getBoolBySharedPreferences("fingerprintAuth") ?? false;
+
+  final LocalAuthenticationService _localAuth = LocalAuthenticationService();
+
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 1), () async {
+      // 先判断是否设置过指纹登录
+      if (fingerprintAuth) {
+        // 校验目前能否进行指纹验证
+        bool canCheckBiometrics = await _localAuth.checkBiometrics();
+        if (canCheckBiometrics) {
+          // 进行指纹验证
+          bool isAuthenticate = await _localAuth.authenticate();
+          if (isAuthenticate) {
+            // 指纹验证成功，跳转首页
+            Navigator.of(context).pushReplacementNamed("MyHomePageRoute");
+          } else {
+            // 指纹不成功
+            Utils.showToast("指纹验证失败，请尝试密码登录");
+          }
+        } else {
+          // 表名当前不能进行指纹验证
+          // 修改进行指纹登录的标记
+          Global.saveBoolBySharedPreferences("fingerprintAuth", false);
+        }
+      }
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text("登录"),
@@ -57,6 +86,20 @@ class _LoginRouteState extends State<LoginRoute> {
                     child: Text("登录"),
                   ),
                 ),
+              ),
+              Visibility(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints.expand(height: 55),
+                    child: RaisedButton(
+                      onPressed: _fingerprintAuth,
+                      child: Text("指纹登录"),
+                    ),
+                  ),
+                ),
+                visible: Global.getBoolBySharedPreferences("fingerprintAuth") ??
+                    false,
               )
             ],
           ),
@@ -73,6 +116,27 @@ class _LoginRouteState extends State<LoginRoute> {
       } else {
         Utils.showToast("密码有误，请确认");
       }
+    }
+  }
+
+  _fingerprintAuth() async {
+    // 校验目前能否进行指纹验证
+    bool canCheckBiometrics = await _localAuth.checkBiometrics();
+    if (canCheckBiometrics) {
+      // 进行指纹验证
+      bool isAuthenticate = await _localAuth.authenticate();
+      if (isAuthenticate) {
+        // 指纹验证成功，跳转首页
+        Navigator.of(context).pushReplacementNamed("MyHomePageRoute");
+      } else {
+        // 指纹不成功
+        Utils.showToast("指纹验证失败，请尝试密码登录");
+      }
+    } else {
+      // 表名当前不能进行指纹验证
+      // 修改进行指纹登录的标记
+      Global.saveBoolBySharedPreferences("fingerprintAuth", false);
+      Utils.showToast("暂未设置指纹登录或手机不支持指纹验证，请尝试密码登录");
     }
   }
 }

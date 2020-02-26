@@ -114,7 +114,7 @@ class _MyDrawerState extends State<MyDrawer> {
           leading: const Icon(Icons.fingerprint),
           title: Text("指纹登录"),
           onTap: () async{
-//            Utils.showToast("开通指纹登陆");
+            Utils.showToast("开通指纹登陆");
             await _localAuth.authenticate();
           },
         ),
