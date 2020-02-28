@@ -1,13 +1,16 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:package_info/package_info.dart';
 import 'package:password_manager/common/Global.dart';
+import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/models/pwdManager.dart';
 import 'package:password_manager/service/pwd_manager_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HttpService {
   static Dio dio = Dio(BaseOptions(
-    baseUrl: "http://hospital.4kb.cn/",
+    baseUrl: "http://hospital.4kb.cn/password_manager",
   ));
 
   /// 测试
@@ -42,8 +45,42 @@ class HttpService {
     List<Map<String, dynamic>> list = await PwdManagerService.selectAll();
     // 然后发送所有密码到邮箱
     String account = Global.getBySharedPreferences("account");
-    Map result =
-        await sendPassword(account, "备份所有密码", json.encode(list));
+    Map result = await sendPassword(account, "备份所有密码", json.encode(list));
     return result;
+  }
+
+  /// 打开浏览器下载最新apk
+  launchURL() async {
+    const url = 'https://hospital.4kb.cn/password-manager-debug.apk';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  /// 检查是否需要更新
+  Future<bool> checkNotUpdate() async {
+    const url = "/app/getAppVersion";
+    Response<String> r;
+    try {
+      r = await dio.get(url);
+      String serverAppVersion = r.data;
+      if (serverAppVersion == null || serverAppVersion.isEmpty) {
+        // 服务器没有版本信息，表示不用更新
+        return true;
+      }
+      // 获取本地app版本
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String localAppVersion = packageInfo.version;
+      print("serverAppVersion:$serverAppVersion");
+      print("localAppVersion:$localAppVersion");
+      // 服务器app版本和本地app版本一样表示不用更新
+      return serverAppVersion == localAppVersion;
+    } catch (e) {
+      print(e);
+      Utils.showToast("服务器异常，请稍候重试");
+      return true;
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
+import 'package:password_manager/service/http_service.dart';
 
 class RegisterRoute extends StatefulWidget {
   @override
@@ -16,6 +17,44 @@ class _RegisterRouteState extends State<RegisterRoute> {
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(milliseconds: 0), () async {
+      // 检查服务器是否不更新
+      HttpService httpService = HttpService();
+      if(await httpService.checkNotUpdate()){
+        return;
+      }
+      bool later = true;
+      bool flag = await showDialog(
+        // 点击空白不关闭弹窗
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("更新"),
+              content: Text("服务器有新版本，是否现在更新?"),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    later = true;
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text("否"),
+                ),
+                FlatButton(
+                  onPressed: () {
+                    later = false;
+                    // 更新app
+                    httpService.launchURL();
+                    Navigator.of(context).pop(false);
+                  },
+                  child: Text("是"),
+                ),
+              ],
+            );
+          });
+      print("register:later:$later");
+      print("register:flag:$flag");
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text("注册"),

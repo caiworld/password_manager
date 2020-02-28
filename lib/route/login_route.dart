@@ -4,6 +4,7 @@ import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/encrypt_decrypt_utils.dart';
 import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/main.dart';
+import 'package:password_manager/service/http_service.dart';
 import 'package:password_manager/service/local_authentication_service.dart';
 
 class LoginRoute extends StatefulWidget {
@@ -25,10 +26,53 @@ class _LoginRouteState extends State<LoginRoute> {
   final LocalAuthenticationService _localAuth = LocalAuthenticationService();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 1), () async {
+    Future.delayed(Duration(milliseconds: 0), () async {
+      // 检查服务器是否不更新
+      HttpService httpService = HttpService();
+      if(await httpService.checkNotUpdate()){
+        return true;
+      }
+      bool later = true;
+      bool flag = await showDialog(
+          // 点击空白不关闭弹窗
+          barrierDismissible: false,
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("更新"),
+              content: Text("服务器有新版本，是否现在更新?"),
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    later = true;
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text("否"),
+                ),
+                FlatButton(
+                  onPressed: () {
+                    later = false;
+                    // 更新app
+                    httpService.launchURL();
+                    Navigator.of(context).pop(false);
+                  },
+                  child: Text("是"),
+                ),
+              ],
+            );
+          });
+      print("login:later:$later");
+      print("login:flag:$flag");
+      return later;
+    }).then((v) async {
       // 先判断是否设置过指纹登录
-      if (fingerprintAuth) {
+      if (v && fingerprintAuth) {
         // 校验目前能否进行指纹验证
         bool canCheckBiometrics = await _localAuth.checkBiometrics();
         if (canCheckBiometrics) {
