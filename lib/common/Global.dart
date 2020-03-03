@@ -1,5 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:password_manager/common/encrypt_decrypt_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// 提供5套可选主题色
+const _themes = <MaterialColor>[
+  Colors.blue,
+  Colors.cyan,
+  Colors.teal,
+  Colors.green,
+  Colors.red,
+];
 
 class Global {
   // 保存数据的 SharedPreference
@@ -49,4 +59,6 @@ class Global {
   static bool getBoolBySharedPreferences(String key) {
     return _prefs.getBool(key);
   }
+
+  static List<MaterialColor> get themes => _themes;
 }

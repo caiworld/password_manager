@@ -12,6 +12,7 @@ import 'package:password_manager/route/add_password_route.dart';
 import 'package:password_manager/route/login_route.dart';
 import 'package:password_manager/route/register_route.dart';
 import 'package:password_manager/route/restore_password_route.dart';
+import 'package:password_manager/route/theme_change_route.dart';
 import 'package:password_manager/route/update_password_route.dart';
 import 'package:password_manager/service/pwd_manager_service.dart';
 import 'package:password_manager/service/service_locator.dart';
@@ -34,15 +35,15 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: <SingleChildCloneableWidget>[
         ChangeNotifierProvider.value(value: HomeRefreshModel()),
+        ChangeNotifierProvider.value(value: ThemeModel()),
       ],
       child: Consumer(
         builder: (BuildContext context, HomeRefreshModel homeRefreshModel,
             Widget child) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: '密码管理器',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
+            theme: ThemeData(primarySwatch: Provider.of<ThemeModel>(context).theme),
             home: _buildHome(),
             routes: <String, WidgetBuilder>{
               "AddPasswordRoute": (context) => AddPasswordRoute(),
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
               "UpdatePasswordRoute": (context) => UpdatePasswordRoute(),
               "AccountManagerRoute": (context) => AccountManagerRoute(),
               "RestorePasswordRoute": (context) => RestorePasswordRoute(),
+              "ThemeChangeRoute": (context) => ThemeChangeRoute(),
             },
           );
         },

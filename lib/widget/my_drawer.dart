@@ -83,9 +83,7 @@ class _MyDrawerState extends State<MyDrawer> {
           leading: const Icon(Icons.color_lens),
           title: Text("主题"),
           onTap: () async {
-            Utils.showToast("切换主题");
-            HttpService httpService = new HttpService();
-            print(await httpService.test());
+            Navigator.of(context).pushNamed("ThemeChangeRoute");
           },
         ),
         ListTile(
