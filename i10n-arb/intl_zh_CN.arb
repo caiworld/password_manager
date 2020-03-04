@@ -1,0 +1,16 @@
+{
+  "@@last_modified": "2020-03-04T14:30:33.498453",
+  "@@locale":"zh_CN",
+  "title": "密码管理工具",
+  "@title": {
+    "description": "应用名称",
+    "type": "text",
+    "placeholders": {}
+  },
+  "name": "姓名",
+  "@name": {
+    "description": "名字",
+    "type": "text",
+    "placeholders": {}
+  }
+}

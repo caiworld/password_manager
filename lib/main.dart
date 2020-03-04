@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:flukit/flukit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
+import 'package:password_manager/i10n/localization_intl.dart';
 import 'package:password_manager/models/index.dart';
 import 'package:password_manager/models/provider_model.dart';
 import 'package:password_manager/route/account_manager_route.dart';
 import 'package:password_manager/route/add_password_route.dart';
+import 'package:password_manager/route/language_route.dart';
 import 'package:password_manager/route/login_route.dart';
 import 'package:password_manager/route/register_route.dart';
 import 'package:password_manager/route/restore_password_route.dart';
@@ -36,14 +39,48 @@ class MyApp extends StatelessWidget {
       providers: <SingleChildCloneableWidget>[
         ChangeNotifierProvider.value(value: HomeRefreshModel()),
         ChangeNotifierProvider.value(value: ThemeModel()),
+        ChangeNotifierProvider.value(value: LocaleModel()),// 1
       ],
-      child: Consumer(
+      child: Consumer2(
         builder: (BuildContext context, HomeRefreshModel homeRefreshModel,
-            Widget child) {
+            LocaleModel localeModel, Widget child) {
           return MaterialApp(
+            localizationsDelegates: [// 2
+              // 本地化的代理类
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              MyLocalizationsDelegate(),
+            ],
+            locale:localeModel.getLocale(),// 3
+            onGenerateTitle: (context) {// 4
+              // 此时context在Localizations的子树中，以避免MaterialApp中的title属性报错
+              return MyLocalizations.of(context).title;
+            },
+            supportedLocales: [ // 5
+              const Locale('en', 'US'), // 美国英语
+              const Locale('zh', 'CN'), // 中文简体
+            ],
+            // 6
+            localeResolutionCallback: (Locale _locale, Iterable<Locale> supportedLocales){
+              if(localeModel.getLocale()!=null){
+                // 表名已经选定语言，则不跟随系统
+                return localeModel.getLocale();
+              }else{
+               Locale locale;
+               // app语言跟随系统语言，如果系统语言不是中文简体或美国英语，
+               // 则默认使用中文
+                if(supportedLocales.contains(_locale)){
+                  locale = _locale;
+                }else{
+                  locale = Locale('zh','CN');
+                }
+                return locale;
+              }
+            },
             debugShowCheckedModeBanner: false,
-            title: '密码管理器',
-            theme: ThemeData(primarySwatch: Provider.of<ThemeModel>(context).theme),
+//            title: '密码管理器',
+            theme: ThemeData(
+                primarySwatch: Provider.of<ThemeModel>(context).theme),
             home: _buildHome(),
             routes: <String, WidgetBuilder>{
               "AddPasswordRoute": (context) => AddPasswordRoute(),
@@ -53,6 +90,7 @@ class MyApp extends StatelessWidget {
               "AccountManagerRoute": (context) => AccountManagerRoute(),
               "RestorePasswordRoute": (context) => RestorePasswordRoute(),
               "ThemeChangeRoute": (context) => ThemeChangeRoute(),
+              "LanguageRoute": (context) => LanguageRoute(),
             },
           );
         },

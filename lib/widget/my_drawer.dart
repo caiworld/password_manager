@@ -120,7 +120,7 @@ class _MyDrawerState extends State<MyDrawer> {
           leading: const Icon(Icons.language),
           title: Text("国际化"),
           onTap: () {
-            Utils.showToast("设置国际化");
+            Navigator.of(context).pushNamed("LanguageRoute");
           },
         ),
         ListTile(

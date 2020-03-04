@@ -50,10 +50,17 @@ dependencies:
   package_info: ^0.4.0+12
   # 用于启动浏览器更新app
   url_launcher: ^5.2.7
+  # 用于国际化，而intl包主要是引用和加载intl_translation生成后的dart代码
+  intl: ^0.15.7
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # 主要包含了一些工具，它在开发阶段主要主要的作用是从代码中提取要国际化的字符串到单独的arb文件
+  # 和根据arb文件生成对应语言的dart代码，而intl包主要是引用和加载intl_translation生成后的dart代码
+  intl_translation: ^0.17.2
 
 
 # For information on the generic Dart part of this file, see the

@@ -1,0 +1,16 @@
+{
+  "@@last_modified": "2020-03-04T14:30:33.498453",
+  "@@locale":"en_US",
+  "title": "password_manager",
+  "@title": {
+    "description": "app's name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "name": "name",
+  "@name": {
+    "description": "name",
+    "type": "text",
+    "placeholders": {}
+  }
+}
