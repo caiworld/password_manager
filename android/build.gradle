@@ -27,3 +27,14 @@ subprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+
+    project.configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'androidx.appcompat') {
+                details.useVersion "1.0.0"
+            }
+        }
+    }
+}

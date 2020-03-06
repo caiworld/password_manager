@@ -54,6 +54,10 @@ dependencies:
   intl: ^0.15.7
   flutter_localizations:
     sdk: flutter
+  # 相册多图选择
+  photo: ^0.4.8
+  #相机拍照，单图选择
+  image_picker: ^0.6.2+2
 
 dev_dependencies:
   flutter_test:
@@ -76,6 +80,8 @@ flutter:
 
   assets:
     - imgs/ic_launcher.png
+    - imgs/add.png
+    - imgs/cross.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

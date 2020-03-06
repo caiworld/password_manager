@@ -127,6 +127,7 @@ class _MyDrawerState extends State<MyDrawer> {
           leading: const Icon(Icons.feedback),
           title: Text("反馈意见"),
           onTap: () {
+            Navigator.of(context).pushNamed("FeedbackRoute");
             Utils.showToast("反馈意见");
           },
         )

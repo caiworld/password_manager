@@ -11,6 +11,7 @@ import 'package:password_manager/models/index.dart';
 import 'package:password_manager/models/provider_model.dart';
 import 'package:password_manager/route/account_manager_route.dart';
 import 'package:password_manager/route/add_password_route.dart';
+import 'package:password_manager/route/feedback_route.dart';
 import 'package:password_manager/route/language_route.dart';
 import 'package:password_manager/route/login_route.dart';
 import 'package:password_manager/route/register_route.dart';
@@ -39,40 +40,45 @@ class MyApp extends StatelessWidget {
       providers: <SingleChildCloneableWidget>[
         ChangeNotifierProvider.value(value: HomeRefreshModel()),
         ChangeNotifierProvider.value(value: ThemeModel()),
-        ChangeNotifierProvider.value(value: LocaleModel()),// 1
+        ChangeNotifierProvider.value(value: LocaleModel()), // 1
       ],
       child: Consumer2(
         builder: (BuildContext context, HomeRefreshModel homeRefreshModel,
             LocaleModel localeModel, Widget child) {
           return MaterialApp(
-            localizationsDelegates: [// 2
+            localizationsDelegates: [
+              // 2
               // 本地化的代理类
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               MyLocalizationsDelegate(),
             ],
-            locale:localeModel.getLocale(),// 3
-            onGenerateTitle: (context) {// 4
+            locale: localeModel.getLocale(),
+            // 3
+            onGenerateTitle: (context) {
+              // 4
               // 此时context在Localizations的子树中，以避免MaterialApp中的title属性报错
               return MyLocalizations.of(context).title;
             },
-            supportedLocales: [ // 5
+            supportedLocales: [
+              // 5
               const Locale('en', 'US'), // 美国英语
               const Locale('zh', 'CN'), // 中文简体
             ],
             // 6
-            localeResolutionCallback: (Locale _locale, Iterable<Locale> supportedLocales){
-              if(localeModel.getLocale()!=null){
+            localeResolutionCallback:
+                (Locale _locale, Iterable<Locale> supportedLocales) {
+              if (localeModel.getLocale() != null) {
                 // 表名已经选定语言，则不跟随系统
                 return localeModel.getLocale();
-              }else{
-               Locale locale;
-               // app语言跟随系统语言，如果系统语言不是中文简体或美国英语，
-               // 则默认使用中文
-                if(supportedLocales.contains(_locale)){
+              } else {
+                Locale locale;
+                // app语言跟随系统语言，如果系统语言不是中文简体或美国英语，
+                // 则默认使用中文
+                if (supportedLocales.contains(_locale)) {
                   locale = _locale;
-                }else{
-                  locale = Locale('zh','CN');
+                } else {
+                  locale = Locale('zh', 'CN');
                 }
                 return locale;
               }
@@ -91,6 +97,7 @@ class MyApp extends StatelessWidget {
               "RestorePasswordRoute": (context) => RestorePasswordRoute(),
               "ThemeChangeRoute": (context) => ThemeChangeRoute(),
               "LanguageRoute": (context) => LanguageRoute(),
+              "FeedbackRoute": (context) => FeedbackRoute(),
             },
           );
         },
@@ -128,18 +135,19 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         title: Text(widget.title),
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                Navigator.of(context)
-                    .pushNamed("AddPasswordRoute")
-                    .then((pwdManagerModel) {
-                  if (pwdManagerModel != null) {
-                    setState(() {
-                      data.insert(0, pwdManagerModel);
-                    });
-                  }
-                });
-              })
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamed("AddPasswordRoute")
+                  .then((pwdManagerModel) {
+                if (pwdManagerModel != null) {
+                  setState(() {
+                    data.insert(0, pwdManagerModel);
+                  });
+                }
+              });
+            },
+          ),
         ],
       ),
       body: _buildBody(),

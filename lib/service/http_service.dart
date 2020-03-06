@@ -83,4 +83,19 @@ class HttpService {
       return true;
     }
   }
+
+  Future<Map> sendFeedback(FormData formData) async{
+    Response<Map> r;
+    Map map;
+    try {
+      r = await dio.post<Map>('/sendFeedback',data: formData);
+      map = r.data;
+      print(map);
+    } catch (e) {
+      print(e);
+      Utils.showToast("服务器异常，请稍候重试");
+      map = {"msg":"服务器异常，请稍候重试"};
+    }
+    return map;
+  }
 }
