@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:password_manager/common/Global.dart';
 import 'package:password_manager/common/utils.dart';
 import 'package:password_manager/service/http_service.dart';
 import 'package:password_manager/widget/jh_photo_picker_tool_widget.dart';
@@ -73,6 +74,7 @@ class _FeedbackRouteState extends State<FeedbackRoute> {
     );
   }
 
+  /// 发送多张图片
   _sendFeedback() async {
     // 校验
     if (_globalKey.currentState.validate()) {}
@@ -82,18 +84,53 @@ class _FeedbackRouteState extends State<FeedbackRoute> {
       print(path);
       MultipartFile file = await MultipartFile.fromFile(
         path,
-        filename: path.substring(path.lastIndexOf("/")+1),
+        filename: path.substring(path.lastIndexOf("/") + 1),
         contentType: MediaType(
           "image",
-          path.substring(path.lastIndexOf(".")+1),
+          path.substring(path.lastIndexOf(".") + 1),
         ),
       );
       files.add(file);
     }
+    String content = "from：" +
+            (Global.getBySharedPreferences("account") ?? "") +
+            "<br>content：" +
+            _textController.text ??
+        "";
+    FormData formData = FormData.fromMap({"files": files, "content": content});
+    Map<String, dynamic> map = Map<String, dynamic>();
+    map["files"] = files;
+    map["content"] = content;
+    Utils.showToast("正在发送反馈中");
+    Map result = await HttpService().sendFeedback(formData, map);
+    if(result != null && result['success']){
+      Utils.showToast("反馈成功");
+      Navigator.of(context).pop();
+    }else{
+      Utils.showToast("反馈失败，请稍候重试");
+    }
+  }
+
+  /// 发送单张图片
+  _sendFeedback2() async {
+    // 校验
+    if (_globalKey.currentState.validate()) {}
+    String path = imgPaths[0];
+    print(path);
+    MultipartFile file = await MultipartFile.fromFile(
+      path,
+      filename: path.substring(path.lastIndexOf("/") + 1),
+      contentType: MediaType(
+        "image",
+        path.substring(path.lastIndexOf(".") + 1),
+      ),
+    );
     FormData formData = FormData.fromMap({
-      "files": files,
+      "file": file,
+      "content": _textController.text ?? "",
+      "from": Global.getBySharedPreferences("account") ?? ""
     });
-    HttpService().sendFeedback(formData);
+    HttpService().sendFeedback(formData, null);
     Utils.showToast("发送反馈");
   }
 }
